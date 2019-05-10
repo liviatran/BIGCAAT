@@ -1,7 +1,7 @@
   #variantAA_extractor function
-  #V 0.4
+  #V 0.5
   #By: L Tran
-  #03/22/19
+  #05/09/19
   
 
   ##Source Files
@@ -119,7 +119,7 @@ load("AA_atlas.rda")
     #empty variables for exon_extractor function   
     variantAApositions<-geno_exonlist<-missing_geno_output<-missing_geno<-rep_variantAA<-mastertablecols<-mastertable<-position_parsed<-nonCWD_checked<-nonCWDtrunc<-singleAA_exon<-singleAA_alleles<-pastedAAseq<-columns<-all_gdata<-genotype_variants<-geno_alleles<-AA_segments<-AA_aligned <-refexon<-pepsplit<-alignment<-exonlist<- sapply(loci, function(x) NULL)
   
-#begin for loop   
+  #begin for loop   
   for(i in 1:length(loci)){
     #downloads relevant locus alignment file -- readLines allows for space preservation, which is important in
     #finding where the alignment sequence starts 
@@ -259,16 +259,15 @@ load("AA_atlas.rda")
     #finds positions in AA_segments that have ".", indicating an inDel 
     inDels[[loci[[i]]]]<-colnames(AA_segments[[loci[[i]]]][1, 5:ncol(AA_segments[[loci[[i]]]])][AA_segments[[loci[[i]]]][1, 5:ncol(AA_segments[[loci[[i]]]])] %in% "."])
     
-    #if a column in AA_segments contains positions with an inDel, the column name is changed to "InDel__n"
-    for(b in 1:length(inDels[[loci[[i]]]])){
-      b=1:length(inDels[[loci[[i]]]])
-      names(AA_segments[[loci[[i]]]])[names(AA_segments[[loci[[i]]]]) %in% inDels[[loci[[i]]]]]<-paste("InDel", b, sep="_")}
-    
     #inputs AA_segments alignment sequence into the corr_table with "InDel" still present
     corr_table[[loci[[i]]]][1,]<-names(AA_segments[[loci[[i]]]][5:ncol(AA_segments[[loci[[i]]]])])
     
-    #renumbers corr_table for proper enumeration for all positions that aren't inDel 
-    corr_table[[loci[[i]]]][1,][!grepl("InDel", corr_table[[loci[[i]]]][1,])]<-1:(length(corr_table[[loci[[i]]]][1,])-length(corr_table[[loci[[i]]]][1,][grepl("InDel", corr_table[[loci[[i]]]][1,])]))
+    for(b in 1:length(inDels[[loci[[i]]]])){
+      corr_table[[loci[[i]]]][2,][inDels[[loci[[i]]]][[b]]==corr_table[[loci[[i]]]][1,]]<-paste("InDel", b, sep="_")
+    }
+    
+    #fixes enumerations following "InDel"
+    corr_table[[loci[[i]]]][2,][!grepl("InDel", corr_table[[loci[[i]]]][2,])]<-(alignment_start[[loci[[i]]]]:((length(corr_table[[loci[[i]]]][2,])-length(corr_table[[loci[[i]]]][2,][grepl("InDel", corr_table[[loci[[i]]]][2,])]))+alignment_start[[loci[[i]]]]))[!(alignment_start[[loci[[i]]]]:((length(corr_table[[loci[[i]]]][2,])-length(corr_table[[loci[[i]]]][2,][grepl("InDel", corr_table[[loci[[i]]]][2,])]))+alignment_start[[loci[[i]]]]))==0]
     
     #renames columns in AA_segments
     colnames(AA_segments[[loci[i]]]) <- c("locus","allele","trimmed_allele","allele_name", 1:ncol(corr_table[[loci[[i]]]]))
@@ -447,5 +446,5 @@ load("AA_atlas.rda")
 
 
 #example run of the function saved to variantAAtable 
-variantAAtable<-variantAAextractor(loci=c("A", "B", "C", "DPB1", "DRB1", "DQB1"), genotypefiles = "MS_EUR.txt")
+variantAAtable<-variantAAextractor(loci="A", genotypefiles = "MS_EUR.txt")
 
