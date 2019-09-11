@@ -10,8 +10,7 @@
 #Single variant amino acid positions from the BIGDAWG Output List Object (BOLO) are analyzed
 #against a dummy Key Data List Object (KDLO), which is comprised of non-significant values
 #i.e p-value = 0.5, OR = 1.0, and CI= 0.5-1.5
-#Unassociated motifs are output into an Unassociated Motifs List Object (UMLO) and removed from
-#the KDLO
+#Unassociated motifs are output into an Unassociated Motifs List Object (UMLO) and removed from the KDLO
 #Variant amino acid positions that move on are combined pairwise; pairs that show OR improvement
 #with respect to their single variant amino acids postions move on to form triplets, quadruplets, etc
 #until no more improvement is possible 
