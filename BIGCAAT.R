@@ -326,7 +326,6 @@ variantAAextractor<-function(loci,genotypefiles){
     for(k in 5:ncol(AA_segments[[loci[i]]])) {
       AA_segments[[loci[i]]][,k][which(AA_segments[[loci[i]]][,k]=="-")] <- AA_segments[[loci[i]]][,k][1]}  
     
-    
     #for loop for subsetting AA_segments by matching exon start and end cells from AA_atlas
     #column names of AA_segments, which are AA positions
     #subsets relevant amino acids, inputting them into a list
@@ -568,14 +567,12 @@ combiAnalyzer<-function(loci, myData, KDLO, BOLO, UMLO, counter, motif_list, KDL
   #filters out predisposing ORs for analysis
     if(loop==1){
       KDLO<-KDLO %>% filter(OR > 1.0)
-      print("Predisposing OR analysis")
     }
   
   #filters out protective ORs for analysis
   if(loop==2){
    KDLO<-KDLO %>% filter(OR <1.0) 
-   print("Protective OR analysis")
-   
+
   }
   
   #statement for returning BOLO if KDLO=0
@@ -606,17 +603,25 @@ combiAnalyzer<-function(loci, myData, KDLO, BOLO, UMLO, counter, motif_list, KDL
     return(list(KDLO, BOLO, UMLO))
   }
   
+  
   #pair name generation 
   if(counter==0){
     start1<-unique(KDLO$Locus)
+    
+    if((length(start1)-1)==0){
+      return(list(KDLO, BOLO))
+    }
+    
     combinames<-sapply(start1, function(x) NULL)
     for(i in 1:(length(start1)-1)){ ## range.x = 1:(N-1)
-      for(j in (i+1):length(combinames)){ ## range.y = x+1:N
+      for(j in (i+1):length(combinames)){
+        ## range.y = x+1:N
         if(names(combinames)[[j]]!=start1[[i]]){
           combinames[[i]][[j]]<-paste(start1[[i]],names(combinames)[[j]],sep=":")}}}
     #unlists iter0names and omits NAs to obtain all unique possible pair combinations 
     combinames<-unlist(combinames, use.names = F)[!is.na(unlist(combinames, use.names = F))]
   }
+  
   
   #set start as singular amino acids 
   if(counter>0){
@@ -635,6 +640,10 @@ combiAnalyzer<-function(loci, myData, KDLO, BOLO, UMLO, counter, motif_list, KDL
       combinames[[j]]<-paste(mixedsort(strsplit(unlist(possible_combis, use.names=F), ":")[[j]], decreasing=F), collapse=":")}
     
     combinames<-unique(mixedsort(combinames))}
+  
+  if(length(combinames)==0){
+    return(list(KDLO, BOLO, UMLO))
+  }
   
   ###subsets combinames by successive unassociated positions
   if(counter==1) {
@@ -717,7 +726,7 @@ runCombiAnalyzer <- function(loci, variantAAtable, loop) {
   while(stop==FALSE){
     
     #used to inform user what iteration is currently running
-    cat(paste(counter,"iteration(s) have been run \n", sep=" "))
+    cat(paste(counter,"iteration(s) have been run", sep=" "), sep="\n")
     
     #saves each iteration to "interim"
     interim<-combiAnalyzer(loci, myData, BOLO ,KDLO, UMLO, counter, motif_list, KDLO_list, UMLO_list, variantAAtable, loop)
@@ -766,19 +775,22 @@ BIGCAAT <- function(loci, GenotypeFile) {
   }
   
   AAData <- variantAAextractor(loci, Genotype_Data)
-  CombiData <- list()
   
-  for(loop in 1:2){
+  CombiData <- sapply(c("Predisposing", "Protective"), function(x) NULL)
+
+    for(loop in 1:length(CombiData)){
+    if(loop==1){cat("Predisposing OR analysis", sep="\n")}
+    if(loop==2){cat("Protective OR analysis", sep="\n")}
   for (p in 1:length(loci)) {
-    CombiData[loop][[p]] <- runCombiAnalyzer(loci[p], AAData, loop)
+    CombiData[[loop]][[p]] <- runCombiAnalyzer(loci[p], AAData, loop)
+    }
   }
-  CombiData
-  }
+  return(CombiData)
 }
 
 
 #example code
-BIGCAAT("C", "MS_EUR.txt")
-  
+x<-BIGCAAT("A", "MS_EUR.txt")
+
   
   
