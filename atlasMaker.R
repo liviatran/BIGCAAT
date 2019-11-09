@@ -1,5 +1,6 @@
-#atlasMaker
+#atlasMaker v 0.0
 #by: Livia Tran
+#11/8/19
 
 ###This function downloads nucleotide alignment sequences from the ANHIG/IMGTHLA Github Repository
 #and finds exon boundaries within the nucleotide alignment to determine which amino acids in the 
