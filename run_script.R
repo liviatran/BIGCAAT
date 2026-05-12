@@ -23,5 +23,6 @@ for(i in 1:length(scripts)){
 dataset <- ""
 loci <- c()
 
-BIGCAAT(loci, dataset)
+BIDS_results <- BIDS(loci, dataset)
+
 
