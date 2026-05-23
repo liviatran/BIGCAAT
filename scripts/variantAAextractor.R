@@ -1,5 +1,5 @@
 ##### VARIANT AMINO ACID EXTRACTION #####
-# v 0.9
+# v 0.9.1
 #creates a dataframe with variant amino acid positions for a given locus
 
 variantAAextractor<-function(loci, dataset, exon_analyze){
@@ -56,17 +56,9 @@ variantAAextractor<-function(loci, dataset, exon_analyze){
     #account for there being no position zero in the alignment)
     
     ##### EXON 1 COLUMN EXTRACTION #####
-    
-    #Class I
-    if(loci[[i]] %in% c('A', 'B', 'C')) {
-      exonList[[loci[[i]]]][[1]] <- cbind(locusAASegments[, 1:4], locusAASegments[,5:(match(as.numeric(locusAtlas[,1]), columnNames)-1)])
-    }
-    
-    #Class II
-    if(loci[[i]] %in% c('DRB1', 'DQB1', 'DPB1')) {
-      exonList[[loci[[i]]]][[1]] <-cbind(locusAASegments[, 1:4], locusAASegments[,5:(match(as.numeric(locusAtlas[,1]), columnNames)-1)])
-    }
-    
+
+    exonList[[loci[[i]]]][[1]] <- cbind(locusAASegments[, 1:4], locusAASegments[,5:(match(as.numeric(locusAtlas[,1]), columnNames)-1)])
+
     ##### LAST EXON COLUMN EXTRACTION #####
     
     exonList[[loci[i]]][[atlasCols+1]]<-cbind(locusAASegments[,1:4], locusAASegments[match(as.numeric(locusAtlas[[atlasCols]]), columnNames):ncol(locusAASegments)])  
